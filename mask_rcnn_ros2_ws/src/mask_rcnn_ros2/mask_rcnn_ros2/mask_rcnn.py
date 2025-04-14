@@ -68,19 +68,19 @@ class MaskRCNNNode(Node):
         results = test_model.detect([rgb_image], verbose=0)
         r = results[0]
 
-        # 시각화 이미지 생성
-        display_img_rgb = visualize.display_instances(
-            rgb_image, r['rois'], r['masks'], r['class_ids'],
-            ["BG", "tanger", "yeolgwa", "godoo"], r['scores'],
-            show_mask=True, show_bbox=True
-        )
+        # # 시각화 이미지 생성
+        # display_img_rgb = visualize.display_instances(
+        #     rgb_image, r['rois'], r['masks'], r['class_ids'],
+        #     ["BG", "tanger", "yeolgwa", "godoo"], r['scores'],
+        #     show_mask=True, show_bbox=True
+        # )
 
-        try:
-            display_img_bgr = display_img_rgb[:, :, ::-1]  # RGB to BGR
-            result_image_msg = self.bridge.cv2_to_imgmsg(display_img_bgr, encoding="bgr8")
-            self.image_publisher.publish(result_image_msg)
-        except Exception as e:
-            self.get_logger().error(f"Failed to publish result image: {e}")
+        # try:
+        #     display_img_bgr = display_img_rgb[:, :, ::-1]  # RGB to BGR
+        #     result_image_msg = self.bridge.cv2_to_imgmsg(display_img_bgr, encoding="bgr8")
+        #     self.image_publisher.publish(result_image_msg)
+        # except Exception as e:
+        #     self.get_logger().error(f"Failed to publish result image: {e}")
 
         try:
             original_image_msg = self.bridge.cv2_to_imgmsg(color_image_bgr, encoding="bgr8")

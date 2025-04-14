@@ -1,0 +1,26 @@
+[0.299s] Invoking command in '/root/mask_rcnn_ros2_ws/build/mask_rcnn_ros2': PYTHONPATH=/root/mask_rcnn_ros2_ws/build/mask_rcnn_ros2/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/root/mask_rcnn_ros2_ws/install/mask_rcnn_ros2/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /root/mask_rcnn_ros2_ws/build/mask_rcnn_ros2/build --no-deps symlink_data
+[0.393s] /usr/local/lib/python3.8/dist-packages/setuptools/dist.py:697: UserWarning: Usage of dash-separated 'script-dir' will not be supported in future versions. Please use the underscore name 'script_dir' instead
+[0.394s]   warnings.warn(
+[0.412s] running develop
+[0.466s] running egg_info
+[0.466s] creating mask_rcnn_ros2.egg-info
+[0.466s] writing mask_rcnn_ros2.egg-info/PKG-INFO
+[0.466s] writing dependency_links to mask_rcnn_ros2.egg-info/dependency_links.txt
+[0.466s] writing entry points to mask_rcnn_ros2.egg-info/entry_points.txt
+[0.466s] writing requirements to mask_rcnn_ros2.egg-info/requires.txt
+[0.466s] writing top-level names to mask_rcnn_ros2.egg-info/top_level.txt
+[0.466s] writing manifest file 'mask_rcnn_ros2.egg-info/SOURCES.txt'
+[0.478s] reading manifest file 'mask_rcnn_ros2.egg-info/SOURCES.txt'
+[0.479s] writing manifest file 'mask_rcnn_ros2.egg-info/SOURCES.txt'
+[0.496s] running build_ext
+[0.496s] Creating /root/mask_rcnn_ros2_ws/install/mask_rcnn_ros2/lib/python3.8/site-packages/mask-rcnn-ros2.egg-link (link to .)
+[0.497s] Installing mask_rcnn_node script to /root/mask_rcnn_ros2_ws/install/mask_rcnn_ros2/lib/mask_rcnn_ros2
+[0.497s] 
+[0.497s] Installed /root/mask_rcnn_ros2_ws/build/mask_rcnn_ros2
+[0.497s] running symlink_data
+[0.497s] creating /root/mask_rcnn_ros2_ws/install/mask_rcnn_ros2/share/ament_index
+[0.497s] creating /root/mask_rcnn_ros2_ws/install/mask_rcnn_ros2/share/ament_index/resource_index
+[0.497s] creating /root/mask_rcnn_ros2_ws/install/mask_rcnn_ros2/share/ament_index/resource_index/packages
+[0.497s] symbolically linking /root/mask_rcnn_ros2_ws/build/mask_rcnn_ros2/resource/mask_rcnn_ros2 -> /root/mask_rcnn_ros2_ws/install/mask_rcnn_ros2/share/ament_index/resource_index/packages
+[0.497s] symbolically linking /root/mask_rcnn_ros2_ws/build/mask_rcnn_ros2/package.xml -> /root/mask_rcnn_ros2_ws/install/mask_rcnn_ros2/share/mask_rcnn_ros2
+[0.508s] Invoked command in '/root/mask_rcnn_ros2_ws/build/mask_rcnn_ros2' returned '0': PYTHONPATH=/root/mask_rcnn_ros2_ws/build/mask_rcnn_ros2/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/root/mask_rcnn_ros2_ws/install/mask_rcnn_ros2/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py develop --editable --build-directory /root/mask_rcnn_ros2_ws/build/mask_rcnn_ros2/build --no-deps symlink_data

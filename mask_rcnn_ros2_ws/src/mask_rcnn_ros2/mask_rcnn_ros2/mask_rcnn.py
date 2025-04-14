@@ -159,43 +159,90 @@ class MaskRCNNNode(Node):
         self.image_id = 1
         self.annotation_id = 1
 
+    # def process_frame(self):
+    #     frames = self.pipeline.wait_for_frames()
+    #     color_frame = frames.get_color_frame()
+    #     if not color_frame:
+    #         return
+
+    #     color_image_bgr = np.asanyarray(color_frame.get_data())
+
+    #     # ✅ 원본 이미지 퍼블리시
+    #     original_image_msg = self.bridge.cv2_to_imgmsg(color_image_bgr, encoding="bgr8")
+    #     self.original_image_publisher.publish(original_image_msg)
+
+    #     # RGB 변환 후 inference
+    #     rgb_image = cv2.cvtColor(color_image_bgr, cv2.COLOR_BGR2RGB)
+    #     results = test_model.detect([rgb_image], verbose=0)
+    #     r = results[0]
+
+    #     display_img_rgb = visualize.display_instances(
+    #         rgb_image, r['rois'], r['masks'], r['class_ids'],
+    #         ["BG", "tanger", "yeolgwa", "godoo"], r['scores'],
+    #         show_mask=True, show_bbox=True
+    #     )
+    #     display_img_bgr = cv2.cvtColor(display_img_rgb, cv2.COLOR_RGB2BGR)
+    #     cv2.imshow("Instance Segmentation Result", display_img_bgr)
+    #     cv2.waitKey(30)
+
+    #     mask_data = self.format_json_result(r)
+    #     msg = String()
+    #     msg.data = json.dumps(mask_data)
+    #     self.publisher_.publish(msg)
+
+    #     # ✅ 추론 이미지 퍼블리시
+    #     image_msg = self.bridge.cv2_to_imgmsg(display_img_bgr, encoding="bgr8")
+    #     self.image_publisher.publish(image_msg)
+
+    #     self.image_id += 1
+
     def process_frame(self):
         frames = self.pipeline.wait_for_frames()
         color_frame = frames.get_color_frame()
         if not color_frame:
             return
 
+        # BGR → RGB 변환
         color_image_bgr = np.asanyarray(color_frame.get_data())
-
-        # ✅ 원본 이미지 퍼블리시
-        original_image_msg = self.bridge.cv2_to_imgmsg(color_image_bgr, encoding="bgr8")
-        self.original_image_publisher.publish(original_image_msg)
-
-        # RGB 변환 후 inference
         rgb_image = cv2.cvtColor(color_image_bgr, cv2.COLOR_BGR2RGB)
+
+        # ✅ 원본 이미지 퍼블리시 (BGR)
+        try:
+            original_image_msg = self.bridge.cv2_to_imgmsg(color_image_bgr, encoding="bgr8")
+            self.original_image_publisher.publish(original_image_msg)
+        except Exception as e:
+            self.get_logger().error(f"Failed to publish original image: {e}")
+            return
+
+        # Mask R-CNN 추론
         results = test_model.detect([rgb_image], verbose=0)
         r = results[0]
 
+        # 시각화
         display_img_rgb = visualize.display_instances(
             rgb_image, r['rois'], r['masks'], r['class_ids'],
             ["BG", "tanger", "yeolgwa", "godoo"], r['scores'],
             show_mask=True, show_bbox=True
         )
-        display_img_bgr = cv2.cvtColor(display_img_rgb, cv2.COLOR_RGB2BGR)
-        cv2.imshow("Instance Segmentation Result", display_img_bgr)
-        cv2.waitKey(30)
 
-        mask_data = self.format_json_result(r)
-        msg = String()
-        msg.data = json.dumps(mask_data)
-        self.publisher_.publish(msg)
+        # RGB → BGR 변환 후 퍼블리시
+        try:
+            display_img_bgr = cv2.cvtColor(display_img_rgb, cv2.COLOR_RGB2BGR)
+            image_msg = self.bridge.cv2_to_imgmsg(display_img_bgr, encoding="bgr8")
+            self.image_publisher.publish(image_msg)
+        except Exception as e:
+            self.get_logger().error(f"Failed to publish result image: {e}")
 
-        # ✅ 추론 이미지 퍼블리시
-        image_msg = self.bridge.cv2_to_imgmsg(display_img_bgr, encoding="bgr8")
-        self.image_publisher.publish(image_msg)
+        # 결과 JSON 퍼블리시
+        try:
+            mask_data = self.format_json_result(r)
+            msg = String()
+            msg.data = json.dumps(mask_data)
+            self.publisher_.publish(msg)
+        except Exception as e:
+            self.get_logger().error(f"Failed to publish JSON result: {e}")
 
         self.image_id += 1
-
 
 def main(args=None):
     rclpy.init(args=args)

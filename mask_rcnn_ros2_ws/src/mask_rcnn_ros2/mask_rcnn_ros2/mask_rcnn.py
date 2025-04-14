@@ -7,7 +7,7 @@ from std_msgs.msg import Float64MultiArray
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 import cv2
-from .mrcnn import model as modellib
+from .mrcnn import model as modellib, visualize
 from .mrcnn.config import Config
 
 # Mask R-CNN Inference 설정
@@ -64,16 +64,29 @@ class MaskRCNNNode(Node):
 
         color_image_bgr = np.asanyarray(color_frame.get_data())
 
+        rgb_image = color_image_bgr[:, :, ::-1]  # BGR to RGB
+        results = test_model.detect([rgb_image], verbose=0)
+        r = results[0]
+
+        # 시각화 이미지 생성
+        display_img_rgb = visualize.display_instances(
+            rgb_image, r['rois'], r['masks'], r['class_ids'],
+            ["BG", "tanger", "yeolgwa", "godoo"], r['scores'],
+            show_mask=True, show_bbox=True
+        )
+
+        try:
+            display_img_bgr = display_img_rgb[:, :, ::-1]  # RGB to BGR
+            result_image_msg = self.bridge.cv2_to_imgmsg(display_img_bgr, encoding="bgr8")
+            self.image_publisher.publish(result_image_msg)
+        except Exception as e:
+            self.get_logger().error(f"Failed to publish result image: {e}")
+
         try:
             original_image_msg = self.bridge.cv2_to_imgmsg(color_image_bgr, encoding="bgr8")
             self.original_image_publisher.publish(original_image_msg)
         except Exception as e:
             self.get_logger().error(f"Failed to publish original image: {e}")
-            return
-
-        rgb_image = color_image_bgr[:, :, ::-1]  # BGR to RGB
-        results = test_model.detect([rgb_image], verbose=0)
-        r = results[0]
 
         for i in range(len(r["class_ids"])):
             class_id = int(r["class_ids"][i])

@@ -67,20 +67,44 @@ class MaskRCNNNode(Node):
         rgb_image = color_image_bgr[:, :, ::-1]  # BGR to RGB
         results = test_model.detect([rgb_image], verbose=0)
         r = results[0]
+        
+                # RGB 이미지 복사본 생성 (시각화용)
+        vis_image = rgb_image.copy()
 
-        # # 시각화 이미지 생성
-        # display_img_rgb = visualize.display_instances(
-        #     rgb_image, r['rois'], r['masks'], r['class_ids'],
-        #     ["BG", "tanger", "yeolgwa", "godoo"], r['scores'],
-        #     show_mask=True, show_bbox=True
-        # )
+        for i in range(len(r["class_ids"])):
+            class_id = int(r["class_ids"][i])
+            if class_id not in [1, 2, 3]:
+                continue
 
-        # try:
-        #     display_img_bgr = display_img_rgb[:, :, ::-1]  # RGB to BGR
-        #     result_image_msg = self.bridge.cv2_to_imgmsg(display_img_bgr, encoding="bgr8")
-        #     self.image_publisher.publish(result_image_msg)
-        # except Exception as e:
-        #     self.get_logger().error(f"Failed to publish result image: {e}")
+            mask = r["masks"][:, :, i]
+            y1, x1, y2, x2 = r["rois"][i]
+            score = r["scores"][i]
+
+            # 마스크 색상 지정 (클래스별)
+            color = (0, 255, 0) if class_id == 1 else (0, 0, 255) if class_id == 2 else (255, 0, 0)
+
+            # 마스크 씌우기 (알파 블렌딩)
+            for c in range(3):
+                vis_image[:, :, c] = np.where(
+                    mask == 1,
+                    vis_image[:, :, c] * 0.5 + color[c] * 0.5,
+                    vis_image[:, :, c]
+                )
+
+            # 바운딩박스 그리기
+            cv2.rectangle(vis_image, (x1, y1), (x2, y2), color, 2)
+
+            # 클래스 라벨 + 스코어
+            label_text = ["BG", "tanger", "yeolgwa", "godoo"][class_id]
+            cv2.putText(vis_image, f"{label_text} {score:.2f}", (x1, y1 - 5),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
+
+        try:
+            display_img_bgr = display_img_rgb[:, :, ::-1]  # RGB to BGR
+            result_image_msg = self.bridge.cv2_to_imgmsg(display_img_bgr, encoding="bgr8")
+            self.image_publisher.publish(result_image_msg)
+        except Exception as e:
+            self.get_logger().error(f"Failed to publish result image: {e}")
 
         try:
             original_image_msg = self.bridge.cv2_to_imgmsg(color_image_bgr, encoding="bgr8")

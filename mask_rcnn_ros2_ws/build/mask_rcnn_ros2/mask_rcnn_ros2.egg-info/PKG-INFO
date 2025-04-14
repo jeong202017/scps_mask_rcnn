@@ -1,0 +1,12 @@
+Metadata-Version: 2.1
+Name: mask-rcnn-ros2
+Version: 0.0.1
+Summary: ROS2 package for real-time instance segmentation using Mask R-CNN and Realsense D435i
+Home-page: UNKNOWN
+Maintainer: Your Name
+Maintainer-email: your_email@example.com
+License: Apache-2.0
+Platform: UNKNOWN
+
+UNKNOWN
+
